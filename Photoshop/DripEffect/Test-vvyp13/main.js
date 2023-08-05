@@ -1,4 +1,4 @@
-function showLayerNames() {
+async function showLayerNames() {
     const app = require("photoshop").app;
     const allLayers = app.activeDocument.layers;
     const allLayerNames = allLayers.map(layer => layer.name);
@@ -7,6 +7,24 @@ function showLayerNames() {
       <ul>${
         sortedNames.map(name => `<li>${name}</li>`).join("")
       }</ul>`;
+
+      async function convertToSmartObject() {
+        let result;
+        let psAction = require("photoshop").action;
+      
+        let command = [
+            // Convert to Smart Object
+            {"_obj":"newPlacedLayer"}
+        ];
+        result = await psAction.batchPlay(command, {});
+      }
+      
+      async function runModalFunction() {
+        await require("photoshop").core.executeAsModal(convertToSmartObject, {"commandName": "Action Commands"});
+      }
+      
+      await runModalFunction();
+    
 }
 
 document.getElementById("btnPopulate").addEventListener("click", showLayerNames);
